@@ -185,7 +185,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-var API_URL = 'https://script.google.com/macros/s/AKfycbxOV32PDNcq08Uc91qAFBV8nn-1E_Y5a0WPibrJesAIi1qziV9BfyPthJvFSkm7DlDu/exec';
+var API_URL = 'https://script.google.com/macros/s/AKfycby1y8fo6AdVBLHq2UPA8fHOEtfnPIVO4k3abuoO2y8zFs6h2sAKDmnyrtWaCfmAo0zJ/exec';
 var API_KEY = 'Biogaz@60!';
 
 var METRICS = [
@@ -211,7 +211,17 @@ function loadData(){
     .then(function(json){
       icon.className='';
       if(json.error){showError('Erreur API : '+json.error);return;}
-      KPI=json.data; KPI.labels=json.labels; BP=json.bp;
+      // Parser les dates timestamp → MMM-yy
+      var MN=['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+      KPI=json.data;
+      KPI.labels=json.labels.map(function(l){
+        var d=new Date(l);
+        if(!isNaN(d.getTime())){
+          return MN[d.getMonth()]+'-'+String(d.getFullYear()).slice(2);
+        }
+        return String(l);
+      });
+      BP=json.bp;
       document.getElementById('updatedInfo').innerHTML='🕐 Données du<br>'+json.updated;
       document.getElementById('loadingScreen').classList.add('hide');
       renderMetrics();
